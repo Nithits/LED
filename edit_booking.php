@@ -137,7 +137,11 @@ $student_years = ['ปี 1', 'ปี 2', 'ปี 3', 'ปี 4', 'สูงก�
                                 <div class="form-text">หากไม่ต้องการเปลี่ยนไฟล์ ไม่ต้องอัปโหลดใหม่</div>
                                 
                                 <?php 
-                                    $initial_file_path = !empty($booking['sample_file']) ? 'uploads/' . htmlspecialchars($booking['sample_file']) : '';
+                                    $initial_file_path = !empty($booking['sample_file']) 
+                                        ? (str_starts_with($booking['sample_file'], 'uploads/') 
+                                            ? htmlspecialchars($booking['sample_file']) 
+                                            : 'uploads/' . htmlspecialchars($booking['sample_file'])) 
+                                        : '';
                                     $file_extension = !empty($initial_file_path) ? strtolower(pathinfo($initial_file_path, PATHINFO_EXTENSION)) : '';
                                 ?>
                                 <div class="mt-2" id="imagePreviewContainer" style="<?= empty($initial_file_path) ? 'display: none;' : '' ?>">

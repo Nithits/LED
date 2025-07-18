@@ -1,0 +1,15 @@
+RewriteEngine On
+
+# หน้า default
+DirectoryIndex index.php index.html
+
+# ✅ redirect *.php → ไม่มี .php (เฉพาะ GET เท่านั้น)
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+(LED/.+?)\.php[?\s] [NC]
+RewriteRule ^(.+)\.php$ /LED/$1 [R=301,L]
+
+# ✅ rewrite URL แบบไม่มี .php → ไปยังไฟล์ .php (โหลดจริง)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.+?)/?$ $1.php [L]

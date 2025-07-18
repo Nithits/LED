@@ -141,7 +141,7 @@ try {
             echo "
             <script src='https://cdn.socket.io/4.7.2/socket.io.min.js'></script>
             <script>
-                const socket = io('http://localhost:3000');
+                const socket = io('http://10.88.88.171:3000');
                 socket.on('connect', () => {
                     socket.emit('send_message', {
                         booking_id: " . $id . ",

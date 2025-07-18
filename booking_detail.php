@@ -205,7 +205,9 @@ $status_info = $booking ? getStatusBadge($booking['status']) : getStatusBadge(nu
                         </div>
                         
                         <?php if (!empty($booking['sample_file'])): 
-                            $filePath = 'uploads/' . htmlspecialchars($booking['sample_file']);
+                            $filePath = str_starts_with($booking['sample_file'], 'uploads/') 
+                                ? htmlspecialchars($booking['sample_file']) 
+                                : 'uploads/' . htmlspecialchars($booking['sample_file']);
                             $fileExtension = strtolower(pathinfo($booking['sample_file'], PATHINFO_EXTENSION));
                         ?>
                         <div class="card mb-4">
@@ -280,7 +282,7 @@ $status_info = $booking ? getStatusBadge($booking['status']) : getStatusBadge(nu
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">หมายเหตุ (ถ้ามี)</label>
-                                    <textarea name="note" class="form-control" rows="3" placeholder="เช่น เหตุผลที่ปฏิเสธ, คำแนะนำเพิ่มเติม"><?= htmlspecialchars($booking['note']) ?></textarea>
+                                    <textarea name="note" class="form-control" rows="3" placeholder="เช่น เหตุผลที่ปฏิเสธ, คำแนะนำเพิ่มเติม"><?= htmlspecialchars($booking['note'] ?? '') ?></textarea>
                                 </div>
                                 <hr>
                                 <div class="d-grid">

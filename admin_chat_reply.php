@@ -216,7 +216,7 @@ if ($booking_id > 0) {
     const chatScroll = document.getElementById("chatScroll");
     if (chatScroll) chatScroll.scrollTop = chatScroll.scrollHeight;
 
-    const socket = io("http://localhost:3000");
+    const socket = io("http://10.88.88.171:3000");
     const chatForm = document.getElementById("chatForm");
     const input = chatForm?.querySelector("input[name='message']");
     const typingStatus = document.getElementById("typingStatus");

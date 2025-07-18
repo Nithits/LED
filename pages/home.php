@@ -1,22 +1,24 @@
 <?php
 include(__DIR__ . '/../db.php');
 
-// ดึงข้อมูลการจองป้ายไวนิล โดยเพิ่ม b.sample_file
+// ดึงข้อมูลการจองป้ายไวนิล โดยเพิ่ม b.sample_file และเงื่อนไข status = 'in_progress'
 $vinyl_boards_today = $conn->query("
     SELECT sb.id, sb.code, sb.location, sb.image_url, b.title, b.start_date, b.end_date, b.sample_file
     FROM sign_boards sb
     LEFT JOIN bookings b ON sb.id = b.sign_board_id 
     AND DATE(b.start_date) <= CURDATE() AND DATE(b.end_date) >= CURDATE()
+    AND b.status = 'in_progress'
     WHERE sb.type = 'Vinyl' AND sb.version = 'new'
     ORDER BY sb.id
 ");
 
-// ดึงข้อมูลการจองป้าย LED โดยเพิ่ม b.sample_file
+// ดึงข้อมูลการจองป้าย LED โดยเพิ่ม b.sample_file และเงื่อนไข status = 'in_progress'
 $led_boards_today = $conn->query("
     SELECT sb.id, sb.code, sb.location, sb.image_url, b.title, b.start_date, b.end_date, b.sample_file
     FROM sign_boards sb
     LEFT JOIN bookings b ON sb.id = b.sign_board_id 
     AND CURDATE() BETWEEN DATE(b.start_date) AND DATE(b.end_date)
+    AND b.status = 'in_progress'
     WHERE sb.type = 'LED' AND sb.version = 'new'
     ORDER BY sb.id
 ");
@@ -68,7 +70,9 @@ if (is_dir($requirement_dir)) {
                 <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
                     <?php
                         if (!empty($row['sample_file'])) {
-                            $image_path = "uploads/" . htmlspecialchars($row['sample_file']);
+                            $image_path = str_starts_with($row['sample_file'], 'uploads/')
+                                ? htmlspecialchars($row['sample_file'])
+                                : 'uploads/' . htmlspecialchars($row['sample_file']);
                         } else {
                             $image_path = "images/" . htmlspecialchars($row['image_url'] ?? 'placeholder.jpg');
                         }
@@ -109,7 +113,9 @@ if (is_dir($requirement_dir)) {
                     $image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
                     
                     if (!empty($row['sample_file'])) {
-                        $file_path = "uploads/" . htmlspecialchars($row['sample_file']);
+                        $file_path = str_starts_with($row['sample_file'], 'uploads/')
+                            ? htmlspecialchars($row['sample_file'])
+                            : 'uploads/' . htmlspecialchars($row['sample_file']);
                         $file_extension = strtolower(pathinfo($row['sample_file'], PATHINFO_EXTENSION));
 
                         if (in_array($file_extension, $video_extensions)) {

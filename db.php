@@ -4,7 +4,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 $host = "localhost";
 $username = "root";
-$password = "";
+$password = "2531s";
 $database = "signboard_db"; // ชื่อฐานข้อมูลของคุณ
 
 // เชื่อมต่อฐานข้อมูล

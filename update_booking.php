@@ -68,15 +68,49 @@ try {
 
     // 6. จัดการการอัปโหลดไฟล์ (ส่วนนี้เหมือนเดิม)
     $file_path_to_update = $current_image;
+
     if (isset($_FILES['new_image']) && $_FILES['new_image']['error'] === UPLOAD_ERR_OK) {
-        // ... (โค้ดอัปโหลดไฟล์ของคุณ)
+        $upload_dir = __DIR__ . '/uploads/';
+        $file_tmp = $_FILES['new_image']['tmp_name'];
+        $file_name = basename($_FILES['new_image']['name']);
+        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+        // ✅ เพิ่มนามสกุลวิดีโอ
+        $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'docx', 'mp4', 'webm', 'ogg'];
+
+        if (!in_array($file_ext, $allowed_exts)) {
+            die("ประเภทไฟล์ไม่รองรับ (รองรับ: jpg, png, mp4, pdf, เป็นต้น)");
+        }
+
+        // สร้างชื่อไฟล์ใหม่แบบสุ่ม
+        $new_file_name = uniqid('sample_', true) . '.' . $file_ext;
+        $new_file_path = $upload_dir . $new_file_name;
+
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
+        }
+
+        if (move_uploaded_file($file_tmp, $new_file_path)) {
+            // ลบไฟล์เดิมถ้ามี
+            if (!empty($current_image)) {
+                $old_file_path = __DIR__ . '/' . $current_image;
+                if (file_exists($old_file_path)) {
+                    unlink($old_file_path);
+                }
+            }
+
+            // เก็บ path แบบ relative
+            $file_path_to_update = 'uploads/' . $new_file_name;
+        } else {
+            die("อัปโหลดไฟล์ไม่สำเร็จ");
+        }
     }
 
     // 7. อัปเดตข้อมูลลงฐานข้อมูล (ส่วนนี้เหมือนเดิม)
     $stmt = $conn->prepare("
         UPDATE bookings SET
             requester_name = ?, requester_phone = ?, requester_email = ?,
-            user_status = ?, title = ?, faculty = ?, `year` = ?,
+            user_status = ?, title = ?, faculty = ?, year = ?,
             workplace = ?, position = ?, drive_link = ?, sample_file = ? 
         WHERE id = ? AND user_id = ? AND status = 'pending'
     ");
@@ -140,7 +174,7 @@ try {
         echo "
         <script src='https://cdn.socket.io/4.7.2/socket.io.min.js'></script>
         <script>
-            const socket = io('http://localhost:3000');
+            const socket = io('http://10.88.88.171:3000');
             socket.on('connect', () => {
                 socket.emit('send_message', {
                     booking_id: " . $id . ",

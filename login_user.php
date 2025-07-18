@@ -21,10 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(['status' => 'success']);
     exit;
   } else {
-    $name = explode('@', $email)[0];
-    $insert = $conn->prepare("INSERT INTO users (name, email, role) VALUES (?, ?, 'user')");
-    $insert->bind_param("ss", $name, $email);
-    $insert->execute();
+   $name = explode('@', $email)[0];
+   $password = ''; // กำหนดรหัสผ่านเป็นค่าว่าง
+   $insert = $conn->prepare("INSERT INTO users (name, email, role, password) VALUES (?, ?, 'user', ?)");
+   $insert->bind_param("sss", $name, $email, $password);
+   $insert->execute();
 
     $_SESSION['user_id'] = $conn->insert_id;
     $_SESSION['user_name'] = $name;
@@ -161,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
           }
 
-          fetch("login_user.php", {
+          fetch("login_user", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: "email=" + encodeURIComponent(email)
