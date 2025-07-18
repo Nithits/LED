@@ -74,8 +74,14 @@ try {
         $file_tmp = $_FILES['new_image']['tmp_name'];
         $file_name = basename($_FILES['new_image']['name']);
         $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        $file_size = $_FILES['new_image']['size'];
 
-        // ✅ เพิ่มนามสกุลวิดีโอ
+        // ✅ เพิ่มการตรวจสอบขนาดไฟล์ (10MB = 10 * 1024 * 1024)
+        if ($file_size > 10 * 1024 * 1024) {
+            die("ขนาดไฟล์ต้องไม่เกิน 10 MB");
+        }
+
+        // ✅ เพิ่มนามสกุลที่รองรับ
         $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'docx', 'mp4', 'webm', 'ogg'];
 
         if (!in_array($file_ext, $allowed_exts)) {
@@ -91,7 +97,7 @@ try {
         }
 
         if (move_uploaded_file($file_tmp, $new_file_path)) {
-            // ลบไฟล์เดิมถ้ามี
+            // ลบไฟล์เก่า (ถ้ามี)
             if (!empty($current_image)) {
                 $old_file_path = __DIR__ . '/' . $current_image;
                 if (file_exists($old_file_path)) {
@@ -99,7 +105,7 @@ try {
                 }
             }
 
-            // เก็บ path แบบ relative
+            // บันทึก path ใหม่แบบ relative
             $file_path_to_update = 'uploads/' . $new_file_name;
         } else {
             die("อัปโหลดไฟล์ไม่สำเร็จ");
