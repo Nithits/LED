@@ -202,7 +202,7 @@ $bookings = $booking_stmt->get_result();
     const chatScroll = document.getElementById("chatScroll");
     if (chatScroll) chatScroll.scrollTop = chatScroll.scrollHeight;
 
-    const socket = io("http://10.88.88.171:3000"); // เปลี่ยนเป็น URL ของ Server จริง
+    const socket = io({ path: "/socket.io/" }); // เปลี่ยนเป็น URL ของ Server จริง
     const chatForm = document.getElementById("chatForm");
     const input = chatForm.querySelector("input[name='message']");
     const typingStatus = document.getElementById("typingStatus");

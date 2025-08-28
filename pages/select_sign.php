@@ -133,7 +133,7 @@ if (isset($_GET['success'])) {
   <div class="row g-4 mb-5">
     <!-- ป้าย LED -->
     <div class="col-md-6">
-      <a href="led_list.php" class="card-block led-card">
+      <a href="/led_list.php" class="card-block led-card">
         <div class="d-flex align-items-center justify-content-center">
           <i class="bi bi-lightning-fill fs-1 me-3 text-white"></i> <!-- Icon -->
           <h5 class="card-title">ป้าย LED</h5>
@@ -143,7 +143,7 @@ if (isset($_GET['success'])) {
 
     <!-- ป้ายไวนิล -->
     <div class="col-md-6">
-      <a href="vinyl_list.php" class="card-block vinyl-card">
+      <a href="/vinyl_list.php" class="card-block vinyl-card">
         <div class="d-flex align-items-center justify-content-center">
           <i class="bi bi-file-earmark-text-fill fs-1 me-3 text-white"></i> <!-- Icon -->
           <h5 class="card-title">ป้ายไวนิล</h5>

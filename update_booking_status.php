@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "
         <script src='https://cdn.socket.io/4.7.2/socket.io.min.js'></script>
         <script>
-          const socket = io('http://10.88.88.171:3000');
+          const socket = io({ path: '/socket.io/' });
           socket.emit('send_message', {
             booking_id: $booking_id,
             sender: 'admin',

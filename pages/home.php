@@ -51,7 +51,7 @@ if (is_dir($requirement_dir)) {
 }
 ?>
 
-<div class="ccontainer bg-white p-4 rounded shadow mt-4">
+<div class="container bg-white p-4 rounded shadow mt-4">
     <h2 class="fw-bold text-center text-dark mb-3">
         ยินดีต้อนรับเข้าสู่ระบบจองป้ายประชาสัมพันธ์
     </h2>

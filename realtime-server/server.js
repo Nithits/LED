@@ -7,7 +7,8 @@ const server = http.createServer((req, res) => {
 });
 
 const io = new Server(server, {
-    cors: { origin: "*", methods: ["GET", "POST"] }
+  path: "/socket.io/",
+  cors: { origin: "https://adbooking.msu.ac.th", methods: ["GET","POST"] }
 });
 
 io.on("connection", (socket) => {

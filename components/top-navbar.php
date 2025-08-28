@@ -1,15 +1,22 @@
 <?php
-// เริ่มต้น session หากยังไม่ได้เริ่ม
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-// ตรวจสอบการเข้าสู่ระบบทั้ง user และ admin
-$is_logged_in = isset($_SESSION['user_id']) || isset($_SESSION['admin_id']);
-$is_admin = isset($_SESSION['admin_id']);
-?>
+$is_admin     = !empty($_SESSION['admin_id']);
+$is_logged_in = $is_admin || !empty($_SESSION['user_id']);
 
+$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+/* helper: สร้าง URL จากรูท และเช็ค active โดยตัด .php ออก */
+function url($p){ return '/'.ltrim($p,'/'); }
+function strip_php($p){ return preg_replace('/\.php$/','', rtrim($p,'/')); }
+function active_exact($path){
+  global $currentPath;
+  return strip_php($currentPath) === url(strip_php($path)) ? 'active' : '';
+}
+?>
 <nav class="navbar navbar-expand-lg custom-navbar">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="/LED/index.php">ระบบจองป้ายประชาสัมพันธ์</a>
+    <a class="navbar-brand fw-bold" href="<?= url('') ?>">ระบบจองป้ายประชาสัมพันธ์</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -17,38 +24,28 @@ $is_admin = isset($_SESSION['admin_id']);
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto d-flex align-items-center">
         <li class="nav-item">
-          <a class="nav-link <?php echo ($_SERVER['REQUEST_URI'] == '/LED/index.php') ? 'active' : ''; ?>" href="/LED/index.php">หน้าแรก</a>
+          <a class="nav-link <?= active_exact('') ?>" href="<?= url('') ?>">หน้าแรก</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo ($_SERVER['REQUEST_URI'] == '/LED/pages/select_sign.php') ? 'active' : ''; ?>" href="/LED/pages/select_sign.php">จองป้าย</a>
+          <a class="nav-link <?= active_exact('pages/select_sign') ?>" href="<?= url('pages/select_sign') ?>">จองป้าย</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo ($_SERVER['REQUEST_URI'] == '/LED/pages/page2.php') ? 'active' : ''; ?>" href="/LED/pages/page2.php">รายการจอง</a>
+          <a class="nav-link <?= active_exact('pages/page2') ?>" href="<?= url('pages/page2') ?>">รายการจอง</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo ($_SERVER['REQUEST_URI'] == '/LED/pages/guidelines.php') ? 'active' : ''; ?>" href="/LED/pages/guidelines.php">แนวปฏิบัติ</a>
+          <a class="nav-link <?= active_exact('pages/guidelines') ?>" href="<?= url('pages/guidelines') ?>">แนวปฏิบัติ</a>
         </li>
 
         <?php if ($is_logged_in): ?>
-          <!-- เมนูสำหรับ user -->
           <?php if ($is_admin): ?>
-            <!-- เมนูสำหรับ admin -->
             <li class="nav-item">
-              <a class="nav-link <?php echo ($_SERVER['REQUEST_URI'] == '/LED/pages/admin_dashboard.php') ? 'active' : ''; ?>" href="/LED/pages/admin_dashboard.php">แดชบอร์ดผู้ดูแลระบบ</a>
+              <a class="nav-link <?= active_exact('pages/admin_dashboard') ?>" href="<?= url('pages/admin_dashboard') ?>">แดชบอร์ดผู้ดูแลระบบ</a>
             </li>
           <?php endif; ?>
-
-          <li class="nav-item">
-            <a class="nav-link" href="/LED/logout.php" title="ออกจากระบบ">
-              ออกจากระบบ
-            </a>
-          </li>
+          <li class="nav-item"><a class="nav-link" href="<?= url('logout') ?>">ออกจากระบบ</a></li>
         <?php else: ?>
-          <!-- เมนูสำหรับผู้ที่ยังไม่ได้เข้าสู่ระบบ -->
           <li class="nav-item">
-            <a class="nav-link <?php echo ($_SERVER['REQUEST_URI'] == '/LED/login_user.php') ? 'active' : ''; ?>" href="/LED/login_user.php" title="เข้าสู่ระบบ">
-              เข้าสู่ระบบ
-            </a>
+            <a class="nav-link <?= active_exact('login_user') ?>" href="<?= url('login_user') ?>">เข้าสู่ระบบ</a>
           </li>
         <?php endif; ?>
       </ul>

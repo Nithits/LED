@@ -1,15 +1,36 @@
+RewriteRule ^phpmyadmin(?:/|$) - [L]
+
+# --- LED/.htaccess ---
 RewriteEngine On
 
 # หน้า default
 DirectoryIndex index.php index.html
 
-# ✅ redirect *.php → ไม่มี .php (เฉพาะ GET เท่านั้น)
-RewriteCond %{REQUEST_METHOD} =GET
-RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+(LED/.+?)\.php[?\s] [NC]
-RewriteRule ^(.+)\.php$ /LED/$1 [R=301,L]
+# ===== Canonical redirects (สำหรับคำขอจาก client เท่านั้น) =====
 
-# ✅ rewrite URL แบบไม่มี .php → ไปยังไฟล์ .php (โหลดจริง)
-RewriteCond %{REQUEST_FILENAME} !-d
+# ถ้าใครยังเรียก /LED/... ให้ตัด LED ออก
+RewriteCond %{THE_REQUEST} \s/+LED/ [NC]
+RewriteRule ^LED/(.*)$ /$1 [R=301,L]
+
+# ซ่อน /pages ออกจาก URL
+RewriteCond %{THE_REQUEST} \s/+pages/ [NC]
+RewriteRule ^pages/(.+)$ /$1 [R=301,L]
+
+# ซ่อน .php (เฉพาะ GET)
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+RewriteRule ^(?:pages/)?(.+)\.php$ /$1 [R=301,L]
+
+# ===== Internal rewrites (โหลดไฟล์จริง) =====
+
+# ถ้าไม่ใช่ไฟล์/โฟลเดอร์จริง และมี pages/$1.php ให้ชี้ไปที่นั่น
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}\.php -f
-RewriteRule ^(.+?)/?$ $1.php [L]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/pages/$1.php -f
+RewriteRule ^(.+?)/?$ /pages/$1.php [L]
+
+# ถ้าไม่ใช่ไฟล์/โฟลเดอร์จริง และมี $1.php ที่ราก ให้ชี้ไปที่นั่น
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+RewriteRule ^(.+?)/?$ /$1.php [L]

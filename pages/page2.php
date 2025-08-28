@@ -41,6 +41,7 @@ $rows = $result->get_result();
   <link rel="stylesheet" href="../css/sysstyle.css">
   <link rel="icon" type="image/x-icon" href="../images/iconmsu.ico">
   <style>
+    #bookingTable thead th { white-space: nowrap; }
     html, body {
       height: 100%;
       margin: 0;
@@ -111,7 +112,8 @@ $rows = $result->get_result();
         </div>
       </div>
 
-      <table class="table" id="bookingTable">
+      <div class="table-responsive">
+       <table class="table table-striped table-hover align-middle" id="bookingTable">
           <thead>
               <tr>
                   <th>วันที่เริ่ม</th>
@@ -161,12 +163,14 @@ $rows = $result->get_result();
               <?php endwhile; ?>
           </tbody>
       </table>
+      </div>
       <nav><ul class="pagination justify-content-center" id="pagination"></ul></nav>
     </div>
   </main>
   <?php require_once("../components/footer.php"); ?>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const rowsPerPage = 10;
 let currentPage = 1;

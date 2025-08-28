@@ -56,6 +56,14 @@ while ($row = $result->fetch_assoc()) {
       flex-direction: column;
       align-items: flex-start;
     }
+    /* ขนาดปุ่มพื้นฐาน */
+    .pagination .page-link{ min-width:2.25rem; text-align:center; }
+
+    /* มือถือ (≤576px) ย่อตัวอักษร/ระยะขอบ และเพิ่มช่องไฟระหว่างปุ่ม */
+    @media (max-width:576px){
+      .pagination{ gap:.25rem; row-gap:.5rem; }
+      .pagination .page-link{ padding:.375rem .5rem; font-size:.875rem; }
+    }
 </style>
 
 <h4 class="fw-bold mb-3"><i class="bi bi-calendar-week me-2"></i>ตารางการจองป้ายประชาสัมพันธ์</h4>
@@ -135,8 +143,11 @@ while ($row = $result->fetch_assoc()) {
   </table>
 </div>
 
-<nav>
-  <ul class="pagination justify-content-center" id="pagination"></ul>
+<nav class="mt-3">
+  <ul id="pagination"
+      class="pagination justify-content-center flex-wrap gap-1"
+      role="navigation" aria-label="Pagination">
+  </ul>
 </nav>
 
 <!-- Script -->
@@ -178,52 +189,71 @@ function renderTable() {
 
 function renderPagination(totalItems) {
   const totalPages = Math.ceil(totalItems / rowsPerPage);
-  const pagination = document.getElementById("pagination");
+  const pagination  = document.getElementById("pagination");
   pagination.innerHTML = "";
 
-  // Previous
+  const isMobile   = window.matchMedia("(max-width:576px)").matches;
+  const windowSize = isMobile ? 3 : 3; // จำนวนปุ่มเลขหน้าที่จะโชว์ (รวมหน้าปัจจุบัน)
+
+  // คำนวณช่วงเลขหน้าให้ล้อม currentPage
+  let start = Math.max(1, currentPage - Math.floor(windowSize / 2));
+  let end   = Math.min(totalPages, start + windowSize - 1);
+  if (end - start + 1 < windowSize) start = Math.max(1, end - windowSize + 1);
+
+  // Prev
   const prev = document.createElement("li");
   prev.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
-  prev.innerHTML = `<button class="page-link">&laquo;</button>`;
-  prev.addEventListener("click", () => {
-    if (currentPage > 1) {
-      currentPage--;
-      renderTable();
-    }
-  });
+  prev.innerHTML = `<button class="page-link" aria-label="Previous">&laquo;</button>`;
+  prev.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); } };
   pagination.appendChild(prev);
 
-  // Numbered pages
-  for (let i = 1; i <= totalPages; i++) {
+  // ถ้าช่วงไม่ได้เริ่มที่ 1 ใส่ปุ่มหน้าแรก + จุดไข่ปลา
+  if (start > 1) {
+    const first = document.createElement("li");
+    first.className = "page-item";
+    first.innerHTML = `<button class="page-link">1</button>`;
+    first.onclick = () => { currentPage = 1; renderTable(); };
+    pagination.appendChild(first);
+
+    if (start > 2) {
+      const dots = document.createElement("li");
+      dots.className = "page-item disabled";
+      dots.innerHTML = `<span class="page-link">…</span>`;
+      pagination.appendChild(dots);
+    }
+  }
+
+  // เลขหน้าตามช่วง
+  for (let i = start; i <= end; i++) {
     const li = document.createElement("li");
-    li.className = `page-item${i === currentPage ? " active" : ""}`;
+    li.className = `page-item ${i === currentPage ? "active" : ""}`;
     li.innerHTML = `<button class="page-link">${i}</button>`;
-    li.addEventListener("click", () => {
-      currentPage = i;
-      renderTable();
-    });
+    li.onclick = () => { currentPage = i; renderTable(); };
     pagination.appendChild(li);
+  }
+
+  // ถ้าช่วงไม่ได้จบที่ totalPages ใส่จุดไข่ปลา + ปุ่มหน้าสุดท้าย
+  if (end < totalPages) {
+    if (end < totalPages - 1) {
+      const dots = document.createElement("li");
+      dots.className = "page-item disabled";
+      dots.innerHTML = `<span class="page-link">…</span>`;
+      pagination.appendChild(dots);
+    }
+    const last = document.createElement("li");
+    last.className = "page-item";
+    last.innerHTML = `<button class="page-link">${totalPages}</button>`;
+    last.onclick = () => { currentPage = totalPages; renderTable(); };
+    pagination.appendChild(last);
   }
 
   // Next
   const next = document.createElement("li");
   next.className = `page-item ${currentPage === totalPages ? "disabled" : ""}`;
-  next.innerHTML = `<button class="page-link">&raquo;</button>`;
-  next.addEventListener("click", () => {
-    if (currentPage < totalPages) {
-      currentPage++;
-      renderTable();
-    }
-  });
+  next.innerHTML = `<button class="page-link" aria-label="Next">&raquo;</button>`;
+  next.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); } };
   pagination.appendChild(next);
 }
-
-// Bind filters
-document.querySelectorAll("#searchInput, #startDate, #endDate, #filterType, #filterStatus")
-  .forEach(input => input.addEventListener("input", () => {
-    currentPage = 1;
-    renderTable();
-  }));
 
 renderTable();
 </script>
